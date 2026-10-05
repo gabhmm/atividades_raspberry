@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Dashboard</title>
+    <!-- Fontes modernas -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <div class="background-mesh"></div>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>Raspberry Pi Monitor</h1>
+                <p id="hostname" class="subtitle">Carregando...</p>
+            </div>
+            <div class="status-indicator">
+                <span class="pulse"></span>
+                <span id="last-update" class="time-text">Conectando...</span>
+            </div>
+        </header>
+
+        <main class="grid-layout">
+            <!-- Card IP -->
+            <div class="card glass">
+                <div class="card-icon ip-icon">🌐</div>
+                <h2 class="card-title">Rede Local (IP)</h2>
+                <div class="card-value" id="ip-address">--</div>
+            </div>
+
+            <!-- Card Uptime -->
+            <div class="card glass">
+                <div class="card-icon uptime-icon">⏱️</div>
+                <h2 class="card-title">Tempo de Atividade</h2>
+                <div class="card-value" id="uptime">--</div>
+            </div>
+
+            <!-- Card CPU Usg -->
+            <div class="card glass">
+                <div class="card-icon cpu-icon">⚙️</div>
+                <h2 class="card-title">Uso de CPU</h2>
+                <div class="card-value"><span id="cpu-usage">--</span>%</div>
+                <div class="progress-bar-container">
+                    <div id="cpu-bar" class="progress-bar cpu-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Card CPU Temp -->
+            <div class="card glass">
+                <div class="card-icon temp-icon">🌡️</div>
+                <h2 class="card-title">Temperatura CPU</h2>
+                <div class="card-value"><span id="cpu-temp">--</span>°C</div>
+            </div>
+
+            <!-- Card RAM -->
+            <div class="card glass">
+                <div class="card-icon ram-icon">💾</div>
+                <h2 class="card-title">Memória RAM</h2>
+                <div class="card-value"><span id="ram-usage">--</span>%</div>
+                <div class="card-subtext">Total: <span id="ram-total">--</span> MB</div>
+                <div class="progress-bar-container">
+                    <div id="ram-bar" class="progress-bar ram-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Card Disco -->
+            <div class="card glass">
+                <div class="card-icon disk-icon">💽</div>
+                <h2 class="card-title">Armazenamento</h2>
+                <div class="card-value"><span id="disk-usage">--</span>%</div>
+                <div class="card-subtext">Total: <span id="disk-total">--</span> MB</div>
+                <div class="progress-bar-container">
+                    <div id="disk-bar" class="progress-bar disk-bar" style="width: 0%"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>
