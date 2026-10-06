@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Network Monitor</title>
+    <!-- Google Fonts for premium typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="background-anim"></div>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>Monitor de Rede <span class="accent">Pi</span></h1>
+                <p id="last-check" class="subtitle">Iniciando verificação de rede...</p>
+            </div>
+            <button id="refresh-btn" class="btn">Nova Verificação</button>
+        </header>
+
+        <main>
+            <!-- System Info -->
+            <section class="card glass">
+                <h2>Configuração do Equipamento</h2>
+                <div class="grid-info">
+                    <div class="info-item">
+                        <span class="label">Equipamento (Hostname)</span>
+                        <span id="hostname" class="value loading">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Interface Ativa</span>
+                        <span id="interface" class="value loading">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Estado da Conexão</span>
+                        <span id="state" class="value badge loading">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Endereço IP</span>
+                        <span id="ip" class="value loading">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Máscara de Rede</span>
+                        <span id="netmask" class="value loading">-</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="label">Gateway Padrão</span>
+                        <span id="gateway" class="value loading">-</span>
+                    </div>
+                    <div class="info-item dns-item">
+                        <span class="label">Servidores DNS</span>
+                        <span id="dns" class="value loading">-</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Connectivity Tests -->
+            <section class="card glass">
+                <h2>Destinos e Comunicação</h2>
+                <div class="ping-grid" id="ping-container">
+                    <!-- Ping results will be injected here by script.js -->
+                    <div class="ping-placeholder">Aguardando resultados dos testes de comunicação...</div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
