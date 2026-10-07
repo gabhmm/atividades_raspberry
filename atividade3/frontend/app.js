@@ -14,9 +14,24 @@ const myGroupInput = document.getElementById("my-group");
 // Ao carregar a página
 document.addEventListener("DOMContentLoaded", () => {
     fetchHistory();
-    // Atualizar histórico a cada 3 segundos pra ver novas msgs
-    setInterval(fetchHistory, 3000); 
+    // Inicia a conexão WebSocket em vez de usar polling
+    connectWebSocket();
 });
+
+function connectWebSocket() {
+    const wsUrl = `ws://${window.location.host}/api/ws`;
+    const ws = new WebSocket(wsUrl);
+
+    ws.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        renderSingleMessage(msg);
+    };
+
+    ws.onclose = () => {
+        console.log("WebSocket desconectado. Tentando reconectar...");
+        setTimeout(connectWebSocket, 3000);
+    };
+}
 
 // Permite enviar com a tecla Enter
 msgInput.addEventListener("keypress", (e) => {
@@ -36,24 +51,34 @@ async function fetchHistory() {
 }
 
 function renderMessages(messages) {
-    if(messages.length === 0) return;
-    
     historyEl.innerHTML = "";
+    if(messages.length === 0) {
+        historyEl.innerHTML = `<div class="empty-state">Nenhuma mensagem ainda.</div>`;
+        return;
+    }
+    
     messages.forEach(msg => {
-        const div = document.createElement("div");
-        div.className = `message ${msg.is_sent_by_me ? 'sent' : 'received'}`;
-        
-        const date = new Date(msg.timestamp);
-        const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-
-        // textContent evita XSS: o conteúdo vem de outros grupos e nunca é interpretado como HTML
-        div.append(
-            criarSpan("msg-sender", msg.sender),
-            criarSpan("msg-content", msg.content),
-            criarSpan("msg-time", timeStr)
-        );
-        historyEl.appendChild(div);
+        renderSingleMessage(msg);
     });
+}
+
+function renderSingleMessage(msg) {
+    // Remove empty state se existir
+    const emptyState = historyEl.querySelector(".empty-state");
+    if (emptyState) emptyState.remove();
+
+    const div = document.createElement("div");
+    div.className = `message ${msg.is_sent_by_me ? 'sent' : 'received'}`;
+    
+    const date = new Date(msg.timestamp);
+    const timeStr = `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+
+    div.append(
+        criarSpan("msg-sender", msg.sender),
+        criarSpan("msg-content", msg.content),
+        criarSpan("msg-time", timeStr)
+    );
+    historyEl.appendChild(div);
 
     // Rola para o final
     historyEl.scrollTop = historyEl.scrollHeight;
@@ -93,7 +118,8 @@ async function sendMessage() {
 
         if(response.ok) {
             msgInput.value = "";
-            fetchHistory(); // Recarrega histórico para mostrar a msg
+            // O websocket vai receber a mensagem enviada de volta, 
+            // então não precisamos mais chamar o fetchHistory()
         } else {
             const errData = await response.json();
             throw new Error(errData.detail || "Erro desconhecido");

@@ -1,9 +1,9 @@
 # Technical Specification (Tech Spec) - Chat Local Raspberry Pi
 
 ## 1. Stack Tecnológica
-- **Back-end:** Python 3.12+ com **FastAPI** (ou Flask). FastAPI é recomendado por suportar tipagem estrita nativamente. O servidor rodará via `uvicorn`.
-- **Front-end:** Vanilla HTML, CSS e JavaScript puro (sem frameworks pesados). O consumo das APIs será feito nativamente com a `Fetch API`.
-- **Armazenamento:** Memória (listas nativas em Python) ou um arquivo `.json` local para salvar o histórico das mensagens (garantindo que não se perca se o app reiniciar).
+- **Back-end:** Python 3.12+ com **FastAPI** (ou Flask). FastAPI é recomendado por suportar tipagem estrita e **WebSockets** nativamente. O servidor rodará via `uvicorn` e também servirá o Front-end estático.
+- **Front-end:** Vanilla HTML, CSS e JavaScript puro (sem frameworks pesados). O consumo das APIs será feito nativamente com a `Fetch API` e atualizações em tempo real com a `WebSocket API`.
+- **Armazenamento:** Memória (listas nativas em Python) para salvar o histórico das mensagens (garantindo que não se perca se a página for recarregada).
 
 ## 2. Modelagem de Dados (Entidades)
 Seguindo as diretrizes do Mestre Jedi, utilizaremos tipagem estrita e `dataclasses` em Python para modelar nossas informações de forma limpa.
@@ -49,8 +49,9 @@ O back-end servirá dois propósitos: Atender o *nosso* Front-end (UI) e atender
 - **`GET /api/ping`**: Rota leve que o outro grupo pode bater para saber se estamos online. Retorna `{"status": "online"}`.
 
 ### B) Endpoints Internos (Para o nosso Front-end acessar):
-- **`GET /api/history`**: Retorna a lista de todas as mensagens (enviadas e recebidas) para desenhar a tela inicial.
+- **`GET /api/history`**: Retorna a lista de todas as mensagens (enviadas e recebidas) para desenhar a tela inicial ao carregar a página.
 - **`POST /api/send`**: Rota interna. Nosso Front-end manda a mensagem para o nosso Back-end, junto com o IP de destino. O Back-end salva a mensagem como "Enviada", e faz um HTTP POST via biblioteca `requests` para o IP do outro grupo. Se falhar, o Back-end avisa o Front-end.
+- **`ws /api/ws`**: Conexão WebSocket mantida aberta pelo Front-end. Assim que uma nova mensagem chega em `POST /api/messages` ou é enviada com sucesso em `POST /api/send`, o servidor faz o "push" (broadcast) dessa nova mensagem via WebSocket para o Front-end, eliminando o delay.
 
 ## 5. Arquitetura de Resiliência (Polling/Heartbeat)
 - **Cenário Normal:** Front-end -> `POST /api/send` -> Nosso Back-end -> `POST /api/messages` no IP do Parceiro -> OK.

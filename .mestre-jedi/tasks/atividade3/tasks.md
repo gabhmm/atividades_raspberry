@@ -45,3 +45,9 @@ Este documento é o nosso guia passo a passo. Devemos seguir a ordem abaixo rigo
 - [x] **Task 5.2:** Testar o cenário de falha proposital (tentar enviar para uma porta fechada) e validar se o Polling funciona corretamente no Front-end.
 
 > ✅ **Homologação concluída.** Back-end: 11/11 checagens automatizadas (envio local, validações 400/422, falha 503 sem persistir, CORS). Front-end: timer de 15s exibido na falha, reconexão detectada via `GET /api/ping` e envio restabelecido (`POST /api/messages` → 201).
+
+## Fase 6: Migração para WebSockets (Tempo Real)
+- [x] **Task 6.1:** Em `chat_service.py`, implementar um ConnectionManager para guardar conexões WebSocket ativas e criar a função `broadcast_message()`.
+- [x] **Task 6.2:** Em `chat_service.py`, fazer as rotas que salvam mensagens (recebidas e enviadas com sucesso) chamarem o `broadcast_message()`.
+- [x] **Task 6.3:** Em `main.py`, adicionar a rota WebSocket (`@app.websocket("/api/ws")`) para aceitar conexões do Front-end. Adicionar biblioteca `websockets` no `requirements.txt`.
+- [x] **Task 6.4:** No Front-end (`app.js`), remover o `setInterval(fetchHistory, 3000)` e iniciar uma conexão com `new WebSocket()`. Configurar o evento `onmessage` para criar e renderizar o balão da nova mensagem recebida em tempo real.

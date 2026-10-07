@@ -1,5 +1,5 @@
 from dataclasses import asdict, dataclass
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 import datetime
@@ -22,7 +22,7 @@ app.add_middleware(
 # === ROTAS PÚBLICAS (O CONTRATO) ===
 
 @app.post("/api/messages", status_code=201)
-def receive_message(message: Message):
+def receive_message(message: Message, background_tasks: BackgroundTasks):
     """
     Rota que os outros grupos vão chamar para nos enviar uma mensagem.
     """
@@ -33,6 +33,9 @@ def receive_message(message: Message):
     message.is_sent_by_me = False
     
     chat_service_instance.save_message(message)
+    # Task 6.2: Envia a mensagem recebida para todos os front-ends conectados via WebSocket
+    background_tasks.add_task(chat_service_instance.manager.broadcast, message)
+    
     return {"status": "success", "message": "Mensagem recebida"}
 
 
@@ -61,7 +64,7 @@ class SendRequest:
     content: str
 
 @app.post("/api/send", status_code=200)
-def send_message(payload: SendRequest) -> dict[str, str]:
+def send_message(payload: SendRequest, background_tasks: BackgroundTasks) -> dict[str, str]:
     """
     Nosso Front-end chama essa rota para enviar uma mensagem para fora.
     """
@@ -95,8 +98,22 @@ def send_message(payload: SendRequest) -> dict[str, str]:
 
     # 4. Se deu tudo certo, salva no nosso histórico
     chat_service_instance.save_message(new_message)
+    # Task 6.2: Envia a nossa própria mensagem enviada para o Front-end via WebSocket
+    background_tasks.add_task(chat_service_instance.manager.broadcast, new_message)
     
     return {"status": "success", "message": "Mensagem enviada com sucesso"}
+
+# Task 6.3: Rota do WebSocket
+@app.websocket("/api/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await chat_service_instance.manager.connect(websocket)
+    try:
+        while True:
+            # Mantém a conexão aberta esperando mensagens do cliente 
+            # (embora nosso cliente só receba, precisamos deste loop para manter vivo)
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        chat_service_instance.manager.disconnect(websocket)
 
 # === FRONT-END ESTÁTICO ===
 import os
