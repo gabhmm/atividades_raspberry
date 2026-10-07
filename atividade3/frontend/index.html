@@ -1,0 +1,48 @@
+<!DOCTYPE width="device-width, initial-scale=1.0">
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Local Raspberry Pi</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- HEADER COM CONFIGS -->
+        <header class="chat-header">
+            <div class="configs">
+                <div class="input-group">
+                    <label for="my-group">Meu Grupo:</label>
+                    <input type="text" id="my-group" placeholder="Ex: Grupo Alpha">
+                </div>
+                <div class="input-group">
+                    <label for="partner-ip">IP Destino:</label>
+                    <input type="text" id="partner-ip" placeholder="Ex: 192.168.1.50:8000">
+                </div>
+            </div>
+            
+            <!-- TIMER DE RECONEXÃO (Invisível por padrão) -->
+            <div id="polling-alert" class="alert hidden">
+                ⚠️ Parceiro Offline. Tentando reconexão em <span id="polling-timer">15</span>s...
+            </div>
+        </header>
+
+        <!-- ÁREA DE MENSAGENS -->
+        <main class="chat-history" id="chat-history">
+            <!-- Mensagens aparecerão aqui via JS -->
+            <div class="empty-state">Nenhuma mensagem ainda.</div>
+        </main>
+
+        <!-- INPUT E ENVIO -->
+        <footer class="chat-input-area">
+            <input type="text" id="message-input" placeholder="Digite sua mensagem...">
+            <button id="send-btn" onclick="sendMessage()">Enviar</button>
+        </footer>
+
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
