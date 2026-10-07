@@ -2,6 +2,16 @@ const API_BASE = "/api";
 let pollingInterval = null;
 let currentTargetIP = "";
 
+// Funções para o Custom Popup
+function showPopup(message) {
+    document.getElementById("popup-message").textContent = message;
+    document.getElementById("custom-popup").classList.remove("hidden");
+}
+
+function closePopup() {
+    document.getElementById("custom-popup").classList.add("hidden");
+}
+
 // Elementos da DOM
 const historyEl = document.getElementById("chat-history");
 const msgInput = document.getElementById("message-input");
@@ -97,7 +107,7 @@ async function sendMessage() {
     const senderName = myGroupInput.value.trim() || "Anônimo";
 
     if(!content || !currentTargetIP) {
-        alert("Preencha o IP do parceiro e a mensagem!");
+        showPopup("Preencha o IP do parceiro e a mensagem!");
         return;
     }
 
@@ -164,7 +174,7 @@ function iniciarPolling() {
                 if(response.ok) {
                     // Voltou a ficar online!
                     pararPolling();
-                    alert("Parceiro Voltou! Conexão Restabelecida.");
+                    showPopup("Parceiro Voltou! Conexão Restabelecida.");
                 } else {
                     secondsLeft = 15; // reseta timer
                 }

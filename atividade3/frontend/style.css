@@ -200,3 +200,52 @@ body {
     color: #8696a0;
     cursor: not-allowed;
 }
+
+/* Custom Popup Overlay */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-overlay.hidden {
+    display: none;
+}
+
+.popup-box {
+    background-color: var(--surface-header);
+    padding: 24px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    max-width: 300px;
+    text-align: center;
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+.popup-box p {
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.popup-box button {
+    padding: 8px 24px;
+    background-color: var(--primary);
+    color: #111b21;
+    border: none;
+    border-radius: 24px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.popup-box button:hover {
+    background-color: var(--primary-hover);
+}
